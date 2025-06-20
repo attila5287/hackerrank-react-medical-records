@@ -1,7 +1,3 @@
-
-
-
-
 # Patient Medical Records
 
 > Has been told that this is the hardest challenge thus practicing it the last
@@ -10,9 +6,10 @@
 | ----------- |
 | [see live version on vercel](https://hackerrank-react-medical-records.vercel.app/)|
 |[code repo AT](https://github.com/attila5287/hackerrank-react-medical-records) |
-|[solution1](./solution1.md) |
-|[solution1](./solution2.md) |
-|[solution1](./solution3.md) |
+|[solution1: only dropdown](./solution1.md) |
+|[solution2: dropdown+  table](./solution2.md) |
+|[solution3: next-prev buttons](./solution3.md) |
+|[solution4: buttons + table (deployed)](./solution4.md) |
 
 
 
