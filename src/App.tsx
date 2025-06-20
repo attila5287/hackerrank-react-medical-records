@@ -7,7 +7,8 @@ function App() {
   const [selectedUserIndex, setSelectedUserIndex] = useState<number>(0);
   const [ selectedRecordIndex, setSelectedRecordIndex] = useState<number>(0);
   const userIds = data.map((d: any) => d.id)
-  console.log(data.filter((d: any) => d.id === userIds[selectedUserIndex])[0].data[selectedRecordIndex])
+  const userData = data.filter((d: any) => d.id === userIds[selectedUserIndex])[0]
+  console.log(...userData.data)
 
   const handleUserClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const increment = parseInt(e.currentTarget.dataset.increment || "0");
@@ -39,6 +40,8 @@ function App() {
       >
           Next Patient
       </button>
+      <br />
+      <img style={{width: "100px", height: "100px"}} src={"./images/" + userIds[selectedUserIndex] + ".jpg"} alt="User" />
       <h4 className="no-margin">User Index: {selectedUserIndex}</h4>
       <h4 className="no-margin">User ID: {userIds[selectedUserIndex]}</h4>
       <button key="prevRecord"
