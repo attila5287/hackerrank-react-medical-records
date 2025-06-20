@@ -10,6 +10,7 @@
 |[solution2: dropdown+  table](./solution2.md) |
 |[solution3: next-prev buttons](./solution3.md) |
 |[solution4: buttons + table (deployed)](./solution4.md) |
+|[solution5: add plot.js chart for vitals](./solution4.md) |
 
 
 

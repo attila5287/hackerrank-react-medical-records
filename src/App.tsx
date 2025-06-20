@@ -3,6 +3,113 @@ import Header from "./components/Header";
 import "./App.css";
 import { useState } from "react";
 import "bootswatch/dist/slate/bootstrap.min.css";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+function VitalsChart({ userData }: { userData: any }) {
+  const [selectedVital, setSelectedVital] = useState<string>('weight');
+  
+  if (!userData || !userData.data) return null;
+
+  const vitalOptions = [
+    { key: 'weight', label: 'Weight', color: 'rgb(75, 192, 192)', unit: 'kg' },
+    { key: 'bloodPressureSystole', label: 'Blood Pressure (Systolic)', color: 'rgb(255, 99, 132)', unit: 'mmHg' },
+    { key: 'bloodPressureDiastole', label: 'Blood Pressure (Diastolic)', color: 'rgb(54, 162, 235)', unit: 'mmHg' },
+    { key: 'pulse', label: 'Pulse', color: 'rgb(255, 205, 86)', unit: 'bpm' },
+    { key: 'breathingRate', label: 'Breathing Rate', color: 'rgb(153, 102, 255)', unit: 'breaths/min' },
+    { key: 'bodyTemperature', label: 'Body Temperature', color: 'rgb(255, 159, 64)', unit: '°F' },
+  ];
+
+  const getVitalData = (vitalKey: string) => {
+    if (vitalKey === 'weight') {
+      return userData.data.map((record: any) => record.meta.weight).reverse();
+    } else {
+      return userData.data.map((record: any) => record.vitals[vitalKey]).reverse();
+    }
+  };
+
+  const selectedVitalOption = vitalOptions.find(option => option.key === selectedVital);
+
+  const chartData = {
+    labels: userData.data.map((record: any) => 
+      new Date(record.timestamp).toLocaleDateString()
+    ).reverse(),
+    datasets: [
+      {
+        label: selectedVitalOption?.label || 'Vital',
+        data: getVitalData(selectedVital),
+        borderColor: selectedVitalOption?.color || 'rgb(75, 192, 192)',
+        backgroundColor: selectedVitalOption?.color ? selectedVitalOption.color.replace('rgb', 'rgba').replace(')', ', 0.5)') : 'rgba(75, 192, 192, 0.5)',
+        tension: 0.1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: `${selectedVitalOption?.label} Progress - ${userData.data[0]?.userName}`,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: false,
+        title: {
+          display: true,
+          text: selectedVitalOption?.unit || 'Value',
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Date',
+        },
+      },
+    },
+  };
+
+  return (
+    <div className="mt-4">
+      <div className="btn-group my-0" role="group">
+        {vitalOptions.map((option) => (
+          <button
+            key={option.key}
+            type="button"
+            className={`btn btn-sm text-sm ${selectedVital === option.key ? 'btn-success' : 'btn-outline-success'}`}
+            onClick={() => setSelectedVital(option.key)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <Line options={options} data={chartData} />
+    </div>
+  );
+}
 
 function UserGeneralInfo({ record }: { record: any }) {
   return (
@@ -24,12 +131,15 @@ function RecordDiagnosis({ record }: { record: any }) {
 }
 function UserVitals({ record }: { record: any }) {
   return (
-    <ul className="list-group" style={{ textAlign: "left" }} >
+    <ul className="list-group my-2 mx-2" style={{ textAlign: "left" }}>
       {Object.keys(record.vitals).map((key: string) => (
-        <li className="list-group-item">{key}: {record.vitals[key]}</li>
+        <li className="list-group-item py-3">
+          <span className="text-reg">{key}:</span>
+          <span className="text-reg">{record.vitals[key]}</span>
+        </li>
       ))}
     </ul>
-  )
+  );
 }
 function RecordInfo({ record }: { record: any }) {
   return (
@@ -44,7 +154,7 @@ function RecordInfo({ record }: { record: any }) {
       </li>
       <li className="list-group-item">
         <i className="fa-solid fa-user-doctor me-2"></i>
-        Doctor: {record.doctor.name}
+        {record.doctor.name}
       </li>
       <li className="list-group-item">
         <i className="fa-solid fa-weight-scale me-2"></i>
@@ -81,14 +191,13 @@ function App() {
   return (
     <>
       <Header />
-      <div className="container-sm text-center" style={{ maxWidth: "400px" }}>
+      <div className="container-sm text-center" style={{ maxWidth: "600px" }}>
         <h4 className="no-margin display-none">
           User Index: {selectedUserIndex}
         </h4>
         <h4 className="no-margin display-none">
           User ID: {userIds[selectedUserIndex]}
         </h4>
-
         <div className="btn-group">
           <button
             className="btn btn-primary"
@@ -119,25 +228,28 @@ function App() {
             <UserGeneralInfo record={userData.data[0]} />
           </div>
         </div>
+        <VitalsChart userData={userData} />
         <div className="btn-group my-2">
           <button
-            className="btn btn-outline-info"
+            className="btn btn-outline-info border-info border-1"
             key="prevRecord"
             data-increment={-1}
             onClick={handleRecordClick}
           >
+            <i className="fa-solid fa-chevron-left mx-2"></i>
             Prev Record
           </button>
           <button
-            className="btn btn-outline-info"
+            className="btn btn-outline-info border-info border-1"
             key="nextRecord"
             data-increment={1}
             onClick={handleRecordClick}
           >
             Next Record
+            <i className="fa-solid fa-chevron-right mx-2"></i>
           </button>
         </div>
-        <div className="row"> 
+        <div className="row">
           <div className="col-6">
             <h4 className="text-info text-left">
               <i className="fa-solid fa-info-circle"></i>
