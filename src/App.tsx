@@ -27,13 +27,13 @@ function App() {
     <>
       <Header />
       <button
-        key="prev"
+        key="prevUser"
         data-increment={-1}
         onClick={handleUserClick}
       >
         Prev Patient
       </button>
-      <button key="next"
+      <button key="nextUser"
         data-increment={1}
         onClick={handleUserClick}
       >
@@ -41,13 +41,13 @@ function App() {
       </button>
       <h4 className="no-margin">User Index: {selectedUserIndex}</h4>
       <h4 className="no-margin">User ID: {userIds[selectedUserIndex]}</h4>
-      <button key="prev"
+      <button key="prevRecord"
         data-increment={-1}
         onClick={handleRecordClick}
       >
         Prev Record
       </button>
-      <button key="next"
+      <button key="nextRecord"
         data-increment={1}
         onClick={handleRecordClick}
       >
